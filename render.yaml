@@ -1,0 +1,26 @@
+# Render Blueprint: deploys this repo as a web service with a persistent disk for the database.
+services:
+  - type: web
+    name: npp-constituency-register
+    runtime: node
+    plan: starter            # a persistent disk requires a paid plan
+    buildCommand: npm ci --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    disk:
+      name: register-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DB_PATH
+        value: /var/data/register.db
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: TRUST_PROXY
+        value: "1"
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false          # you type this in when creating the service
